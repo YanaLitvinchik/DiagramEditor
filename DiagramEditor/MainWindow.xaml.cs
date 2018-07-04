@@ -21,7 +21,7 @@ namespace DiagramEditor
     public partial class MainWindow : Window
     {
         public List<String> DataList { get; set; }
-        public List<int> point { get; set; }
+        public List<int> point { get; set; }//
        
           
         public MainWindow()
