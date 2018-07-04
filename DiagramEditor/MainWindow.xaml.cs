@@ -20,16 +20,12 @@ namespace DiagramEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<String> DataList { get; set; }
-        public List<int> point { get; set; }//
-       
-          
+        List<DiagramInfo> dinfo = new List<DiagramInfo>();
+        const int interval = 10;
+        public double WidthRect { get; set; }
         public MainWindow()
         {
-
             InitializeComponent();
-            List<String> DataList = new List<String>();
-            List<int> point = new List<int>();
             legend.Focus();
         }
 
@@ -37,10 +33,7 @@ namespace DiagramEditor
         {
             String comb = legend.Text+" => " + data.Text;
             datalist.Items.Add(comb);
-            DataList.Add(comb);
-            string a = data.Text;
-            int i = int.Parse(data.Text);
-            point.Add(i);
+            dinfo.Add(new DiagramInfo(legend.Text, Int32.Parse(data.Text)));
             legend.Clear();
             data.Clear();
             legend.Focus();
@@ -57,16 +50,32 @@ namespace DiagramEditor
             r.RenderTransform = new TranslateTransform(a,b-w);
             viewBox.Children.Add(r);
         }
-
+        //private void drawText(string content, double x, double y, int fontsize)
+        //{
+        //    Label l = new Label();
+        //    l.FontSize = fontsize;
+        //    l.Content = content;
+        //    viewBox.Children.Add(l);
+        //    l.RenderTransform = new TranslateTransform(x - l.FontSize, y - l.FontSize * 2);
+        //}
+        private void DrawDiagram()
+        {
+            WidthRect = (viewBox.ActualWidth - (interval * dinfo.Count)) / dinfo.Count - interval;
+            double x = interval;
+            double y = viewBox.ActualHeight - interval;
+            int max = dinfo.Max(k => k.point);
+            double height;
+            foreach (var item in dinfo)
+            {
+                height = ((100 * item.point) / max) * 5;
+                drawRect(WidthRect, height, Brushes.Orange, Brushes.Blue, 3, x, y - height);
+                x += WidthRect + interval;
+            }
+        }
         private void draw_Click(object sender, RoutedEventArgs e)
         {
-            
-            foreach (var item in DataList)
-            {
-                drawRect(point[1], 10, Brushes.Orange,Brushes.Blue, 3, 0, viewBox.ActualHeight);
-            }
-            
-                      
+            viewBox.Children.Clear();
+            DrawDiagram();
         }
 
         private void del_Click(object sender, RoutedEventArgs e)
@@ -82,7 +91,7 @@ namespace DiagramEditor
 
         private void reset_Click(object sender, RoutedEventArgs e)
         {
-
+            viewBox.Children.Clear();
         }
 
         private void save_Click(object sender, RoutedEventArgs e)
